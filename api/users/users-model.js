@@ -38,9 +38,9 @@ function findBy(filter) {
     ]
    */
   return db("users")
-    .where(filter)
-    .join("roles as r", "u.role_id", "r.role_id")
-    .select("u.user_id", "u.username", "u.password", "r.role_name");
+    .leftJoin("roles", "users.role_id", "roles.role_id")
+    .select("user_id", "username", "password", "role_name")
+    .where(filter);
 }
 
 function findById(user_id) {
