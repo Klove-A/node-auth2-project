@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const Users = require("../users/users-model");
 const { JWT_SECRET } = require("../secrets"); // use this secret!
 
 const restricted = (req, res, next) => {
@@ -17,6 +18,7 @@ const restricted = (req, res, next) => {
 
     Put the decoded token in the req object, to make life easier for middlewares downstream!
   */
+
   // const token = req.headers.authorization;
 
   // if (!token) {
@@ -31,7 +33,7 @@ const restricted = (req, res, next) => {
   //   req.decodedToken = decodedToken;
   //   return next();
   // });
-   next()
+  next();
 };
 
 const only = (role_name) => (req, res, next) => {
@@ -45,6 +47,7 @@ const only = (role_name) => (req, res, next) => {
 
     Pull the decoded token from the req object, to avoid verifying it again!
   */
+
   // if (req.decodedToken.role_name === role_name) {
   //   next();
   // } else {
@@ -53,7 +56,7 @@ const only = (role_name) => (req, res, next) => {
   next();
 };
 
-const checkUsernameExists = (req, res, next) => {
+const checkUsernameExists = async (req, res, next) => {
   /*
     If the username in req.body does NOT exist in the database
     status 401
@@ -61,7 +64,18 @@ const checkUsernameExists = (req, res, next) => {
       "message": "Invalid credentials"
     }
   */
-  next();
+
+  try {
+    const user = await Users.findBy({ username: req.body.username });
+    if (user.length) {
+      next();
+    } else {
+      next({ status: 401, message: "Invalid credentials" });
+    }
+  } catch (err) {
+    next(err);
+  }
+  // next();
 };
 
 const validateRoleName = (req, res, next) => {
