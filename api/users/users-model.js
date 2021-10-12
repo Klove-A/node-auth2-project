@@ -18,6 +18,7 @@ function find() {
       }
     ]
    */
+  return db("users as u").join("roles as r").select("u.user_id", "u.username", "r.role_name")
 }
 
 function findBy(filter) {
