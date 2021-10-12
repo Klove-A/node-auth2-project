@@ -37,10 +37,10 @@ function findBy(filter) {
       }
     ]
    */
-  return db("users")
-    .leftJoin("roles", "users.role_id", "roles.role_id")
-    .select("user_id", "username", "password", "role_name")
-    .where(filter);
+  return db("users as u")
+    .where(filter)
+    .join("roles as r", "u.role_id", "r.role_id")
+    .select("u.user_id", "u.username", "u.password", "r.role_name");
 }
 
 function findById(user_id) {
